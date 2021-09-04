@@ -6,8 +6,8 @@ def create_boy_name():
     Input: NA
     Output: boy_name (string)
     A function to generate a random boy name'''
-    prefix = ["Bran","Bil","Jo","chr","Ma","All","Co","Bri","Dev","Dam","Der","Bo"]
-    suffix = ["don","ly","sh","is","rk","en","ry","an","in","on","ek","b"]
+    prefix = ["Bran","Bil","Jo","chr","Ma","All","Co","Bri","Dev","Dam","Der","Bo","Deer","Ri","Je"]
+    suffix = ["don","ly","sh","is","rk","en","ry","an","in","on","ek","b","rich","ch","ff","a","rey"]
     return r.choice(prefix) + r.choice(suffix)
 
 
@@ -24,8 +24,8 @@ def create_girl_name():
     Input: NA
     Output: girl_name (string)
     A function to generate a random girl name'''
-    prefix = ["A", "Em","Tay","Zo","Gw","Li","Will","Oliv","Ril","Ave","Gra","Qu"]
-    suffix = ["va","ma","lor","ey","en","ly","ow","ia","ey","ry","ce","in"]
+    prefix = ["A", "Em","Tay","Zo","Gw","Li","Will","Oliv","Ril","Ave","Gra","Qu","corry","fai","sa"]
+    suffix = ["va","ma","lor","ey","en","ly","ow","ia","ey","ry","ce","in","na","th","ly","th","ica"]
     return r.choice(prefix) + r.choice(suffix)
 
 
@@ -103,7 +103,7 @@ def simulating_random_guesses():
     print(f"\n\n ____RESULTS_____\nBest Match: {best_match}\nIteration: {best_match_attempt}")
 
 
-def generate_second_guess(previous_guesses,boys,girls):
+def generate_second_guess(previous_guesses,matches,boys,girls):
     '''Input: previous_guesses (dict)
               boys (list)
               girls (list)
@@ -111,33 +111,52 @@ def generate_second_guess(previous_guesses,boys,girls):
        Output:guess (dict)
     A function to generate a guess using keeping the first 5 the same
     but randomizing the last 5'''
-    new_guesses = {}
-    half = 5
-    for key, value in previous_guesses.items():
-        if half != 0:
-            new_guesses[key] = value
-            half -= 1
-        else:
-            break;
-    new_boy = boys.copy()
-    new_girl = girls.copy()
-    for boy in new_guesses.keys():
-        new_boy.remove(boy)
-    for girl in new_guesses.values():
-        new_girl.remove(girl)
-
-    while half != 5:
-        pair_boy = r.choice(new_boy)
-        pair_girl = r.choice(new_girl)
+    if matches != 0:
+        new_guesses = {}
+        half = 5
         for key, value in previous_guesses.items():
-            if pair_boy == key:
-                if pair_girl == value:
-                    pair_girl = r.choice(new_girl)
-        new_guesses[pair_boy] = pair_girl
-        new_girl.remove(pair_girl)
-        new_boy.remove(pair_boy)
-        half += 1
-    return new_guesses
+            if half != 0:
+                new_guesses[key] = value
+                half -= 1
+            else:
+                break;
+        new_boy = boys.copy()
+        new_girl = girls.copy()
+        for boy in new_guesses.keys():
+            new_boy.remove(boy)
+        for girl in new_guesses.values():
+            new_girl.remove(girl)
+
+        while half != 5:
+            pair_boy = r.choice(new_boy)
+            pair_girl = r.choice(new_girl)
+            for key, value in previous_guesses.items():
+                if pair_boy == key:
+                    if pair_girl == value:
+                        pair_girl = r.choice(new_girl)
+            new_guesses[pair_boy] = pair_girl
+            new_girl.remove(pair_girl)
+            new_boy.remove(pair_boy)
+            half += 1
+        return new_guesses
+    else:
+        new_guesses = {}
+        guesses_left = 10
+        new_boy = boys.copy()
+        new_girl = girls.copy()
+        while guesses_left != 0:
+            pair_boy = r.choice(new_boy)
+            pair_girl = r.choice(new_girl)
+            for key, value in previous_guesses.items():
+                if key == pair_boy:
+                    if value == pair_girl:
+                        pair_girl = r.choice(new_girl)
+            new_guesses[pair_boy] = pair_girl
+            new_boy.remove(pair_boy)
+            new_girl.remove(pair_girl)
+            guesses_left -= 1
+        return new_guesses
+
 
 
 #simulating_random_guesses()
@@ -153,7 +172,7 @@ match_attempts += 1
 print("\nFirst Guess: ", first)
 first_res = see_guessing_results(first,couples);
 print("\nResult: ",first_res)
-second_guess = generate_second_guess(first,boys,girls)
+second_guess = generate_second_guess(first,first_res,boys,girls)
 match_attempts += 1
 print("\nSecond Guess: ", second_guess)
 second_res = see_guessing_results(second_guess,couples)
