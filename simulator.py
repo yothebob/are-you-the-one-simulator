@@ -37,9 +37,10 @@ def generate_girl_list():
     return [create_girl_name() for girl in range(10)]
 
 
-def matched_couples(boys,girls):
+def matched_couples(boys,girls,list_len=10):
     '''Input: boys (list)
               girls (list)
+              list_len (int)(optional)
        Output: couples (dict)
        A function for a random matching of boys and girls
        into couples{boy : girl, boy: girl, ...}'''
@@ -47,7 +48,7 @@ def matched_couples(boys,girls):
     boy_list = boys.copy()
     girl_list = girls.copy()
     couples = {}
-    for num in range(10):
+    for num in range(list_len):
         girl = r.choice(girl_list)
         boy = r.choice(boy_list)
         couples[boy] = girl
@@ -81,7 +82,7 @@ def first_guess(boys,girls):
     return matched_couples(boys,girls)
 
 
-def simulating_random_first_guesses():
+def simulating_random_guesses():
     best_match = 0
     best_match_attempt = 0
     match_attempts = 0
@@ -102,18 +103,58 @@ def simulating_random_first_guesses():
     print(f"\n\n ____RESULTS_____\nBest Match: {best_match}\nIteration: {best_match_attempt}")
 
 
-def generate_guesses(previous_guesses,previous_matches,boys,girls):
-    '''Input: previous_guesses (array)
-              previous_matches (array)
-       Output:
-    A function to generate a guess based off divide and conquer'''
+def generate_second_guess(previous_guesses,boys,girls):
+    '''Input: previous_guesses (dict)
+              boys (list)
+              girls (list)
+
+       Output:guess (dict)
+    A function to generate a guess using keeping the first 5 the same
+    but randomizing the last 5'''
     new_guesses = {}
     half = 5
     for key, value in previous_guesses.items():
         if half != 0:
             new_guesses[key] = value
             half -= 1
+        else:
+            break;
+    new_boy = boys.copy()
+    new_girl = girls.copy()
+    for boy in new_guesses.keys():
+        new_boy.remove(boy)
+    for girl in new_guesses.values():
+        new_girl.remove(girl)
+
+    while half != 5:
+        pair_boy = r.choice(new_boy)
+        pair_girl = r.choice(new_girl)
+        for key, value in previous_guesses.items():
+            if pair_boy == key:
+                if pair_girl == value:
+                    pair_girl = r.choice(new_girl)
+        new_guesses[pair_boy] = pair_girl
+        new_girl.remove(pair_girl)
+        new_boy.remove(pair_boy)
+        half += 1
+    return new_guesses
 
 
+#simulating_random_guesses()
+'''\/\/\/ TESTING BELOW \/\/\/'''
 
-simulating_random_first_guesses()
+boys = generate_boy_list()
+girls = generate_girl_list()
+couples = matched_couples(boys,girls)
+print("ANSWER: ",couples)
+match_attempts = 0
+first = first_guess(boys,girls)
+match_attempts += 1
+print("\nFirst Guess: ", first)
+first_res = see_guessing_results(first,couples);
+print("\nResult: ",first_res)
+second_guess = generate_second_guess(first,boys,girls)
+match_attempts += 1
+print("\nSecond Guess: ", second_guess)
+second_res = see_guessing_results(second_guess,couples)
+print("\nSecond Results: ",second_res)
