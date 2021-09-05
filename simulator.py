@@ -159,6 +159,68 @@ def generate_second_guess(previous_guesses,matches,boys,girls):
 
 
 
+def generate_third_guess(previous_guesses,previous_match,boys,girls):
+    '''third guess will randomize the first 5 and use the last 5 from guess 2'''
+    if previous_match > 0:
+        first_half = 0
+        first_half_boy_pool = []
+        first_half_girl_pool = []
+        new_guesses = {}
+        for key, value in previous_guesses.items():
+            if first_half != 5:
+                first_half_boy_pool.append(key)
+                first_half_girl_pool.append(value)
+                first_half += 1
+            else:
+                break
+        #print(first_half,first_half_boy_pool,first_half_girl_pool)
+
+        while first_half != 0:
+            pair_boy = r.choice(first_half_boy_pool)
+            pair_girl = r.choice(first_half_girl_pool)
+
+            for key, value in previous_guesses.items():
+                if key == pair_boy:
+                    if value == pair_girl:
+                        pair_girl = r.choice(first_half_girl_pool)
+            new_guesses[pair_boy] = pair_girl
+            #print("added: ",pair_boy, " and ... ",pair_girl)
+            first_half_girl_pool.remove(pair_girl)
+            first_half_boy_pool.remove(pair_boy)
+            first_half -= 1
+
+        last_half = 0
+        for key, value in previous_guesses.items():
+            if last_half > 5:
+                new_guesses[key] = value
+                last_half += 1
+            else:
+                last_half += 1
+
+        return new_guesses
+    else:
+        new_guesses = {}
+        guesses_left = 10
+        new_boy = boys.copy()
+        new_girl = girls.copy()
+        while guesses_left != 0:
+            pair_boy = r.choice(new_boy)
+            pair_girl = r.choice(new_girl)
+            for key, value in previous_guesses.items():
+                if key == pair_boy:
+                    if value == pair_girl:
+                        pair_girl = r.choice(new_girl)
+            new_guesses[pair_boy] = pair_girl
+            new_boy.remove(pair_boy)
+            new_girl.remove(pair_girl)
+            guesses_left -= 1
+        return new_guesses
+
+
+
+
+
+
 #simulating_random_guesses()
 '''\/\/\/ TESTING BELOW \/\/\/'''
 
@@ -177,3 +239,7 @@ match_attempts += 1
 print("\nSecond Guess: ", second_guess)
 second_res = see_guessing_results(second_guess,couples)
 print("\nSecond Results: ",second_res)
+third_guess = generate_third_guess(second_guess,second_res,boys,girls)
+print("\nThird guesses: ",third_guess)
+third_res = see_guessing_results(third_guess,couples)
+print("\nThird Results: ",third_res)
