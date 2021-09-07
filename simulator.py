@@ -217,7 +217,25 @@ def generate_third_guess(previous_guesses,previous_match,boys,girls):
         return new_guesses
 
 
+def guess_every_other_random(previous_guesses,
+                             previous_match,boys, girls):
+    '''Swap every other match for a random match'''
+    new_boy = boys.copy()
+    new_girl = girls.copy()
+    new_guesses = {}
 
+    every_other = 1
+    for key, value in previous_guesses.items():
+        if every_other == 0:
+            '''return a new random couple'''
+
+            every_other = 1
+            pass
+        else:
+            new_guesses[key] = value
+            new_boy.remove(key)
+            new_girl.remove(value)
+            every_other -= 1
 
 
 
